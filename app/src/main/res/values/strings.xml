@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">SIG-front-end</string>
     <string name="app_title">SIG Project</string>
-    <string name="app_title">SIG Project</string>
+    <string name="title_activity_q_rcode_scanner">QRcodeScannerActivity</string>
 </resources>
