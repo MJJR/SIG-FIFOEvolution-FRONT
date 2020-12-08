@@ -2,4 +2,6 @@
     <string name="app_name">SIG-front-end</string>
     <string name="app_title">SIG Project</string>
     <string name="title_activity_q_rcode_scanner">QRcodeScannerActivity</string>
+    <string name="button_scanner">Scan a QR Code</string>
+    <string name="button_check_permissions">Manage permissions</string>
 </resources>
