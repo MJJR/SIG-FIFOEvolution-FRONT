@@ -2,6 +2,7 @@ package com.example.sig_front_end;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
@@ -31,6 +32,9 @@ public class QRCodeScannerActivity extends AppCompatActivity implements ZXingSca
         GetListQRCode();
         mScannerView = new ZXingScannerView(this);
         setContentView(mScannerView);
+
+        Intent i = new Intent(QRCodeScannerActivity.this,MapActivity.class);
+        startActivity(i);
     }
 
     @Override

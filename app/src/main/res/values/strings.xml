@@ -4,4 +4,6 @@
     <string name="title_activity_q_rcode_scanner">QRcodeScannerActivity</string>
     <string name="button_scanner">Scan a QR Code</string>
     <string name="button_check_permissions">Manage permissions</string>
+    <string name="button_go_to_a_room">Go to a room</string>
+    <string name="button_change_floor">Change floor</string>
 </resources>
