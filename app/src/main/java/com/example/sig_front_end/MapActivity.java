@@ -6,19 +6,17 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -60,6 +58,18 @@ public class MapActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
 
+        String nameCurrentSale;
+        if (savedInstanceState == null) {
+            Bundle extras = getIntent().getExtras();
+            if(extras == null) {
+                nameCurrentSale = null;
+            } else {
+                nameCurrentSale = extras.getString("position");
+            }
+        } else {
+            nameCurrentSale = (String) savedInstanceState.getSerializable("position");
+        }
+
         textViewEtage = (TextView) findViewById(R.id.textview_etage);
         imageView = (ImageView) findViewById(R.id.image_view_map);
         buttonListeSalles = (Button) findViewById(R.id.button_liste_salles);
@@ -83,11 +93,13 @@ public class MapActivity extends AppCompatActivity {
 
         Bitmap bitmap = Bitmap.createBitmap(width,height, Bitmap.Config.RGB_565);
 
-        chargerMap();
-        currentEtage = map.etages.get(0);
+        chargerMapCsv();
 
-        //test
-        currentSalle = currentEtage.salles.get(0);
+        if(nameCurrentSale != null){
+            definirPosition(nameCurrentSale);
+        } else {
+            definirPositionDefaut();
+        }
 
         zoomBar.setMax(300000);
         zoomBar.setProgress(500);
@@ -180,12 +192,29 @@ public class MapActivity extends AppCompatActivity {
         afficherEtage(currentEtage,bitmap);
     }
 
-    private void chargerMap() {
+    private void definirPosition(String nomSalle){
+        definirPositionDefaut();
+        for(Etage e : map.etages){
+            for(Salle s : e.salles){
+                if (nomSalle.equals(s.name)){
+                    currentSalle = s;
+                    currentEtage = e;
+                }
+            }
+        }
+    }
+
+    private void definirPositionDefaut(){
+        currentSalle = map.etages.get(0).salles.get(0);
+        currentEtage = map.etages.get(0);
+    }
+
+    private void chargerMapCsv() {
         //inititalisation de la map
         map = new Map();
         map.etages.add(new Etage(R.raw.rdc,"RDC"));
         map.etages.add(new Etage(R.raw.etage,"etage"));
-        map.chargerQrCoord(R.raw.qrcodes);
+        map.chargerQrCoordCsv(R.raw.qrcodes);
     }
 
     private void afficherEtage(Etage etage, Bitmap bitmap){
@@ -349,7 +378,7 @@ public class MapActivity extends AppCompatActivity {
             etages = new ArrayList<>();
         }
 
-        public void chargerQrCoord(int csvId){
+        public void chargerQrCoordCsv(int csvId){
 
             InputStream is = getResources().openRawResource(csvId);
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
@@ -385,5 +414,9 @@ public class MapActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
+    }
+
+    private void makeText(String text){
+        Toast.makeText(this,text,Toast.LENGTH_LONG).show();
     }
 }

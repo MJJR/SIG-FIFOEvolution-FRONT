@@ -15,9 +15,13 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.zxing.Result;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
 
@@ -25,16 +29,15 @@ public class QRCodeScannerActivity extends AppCompatActivity implements ZXingSca
 
     private ZXingScannerView mScannerView;
     private String list;
+    private ArrayList<String> nomsSalles;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        GetListQRCode();
+        getListQRCode();
+        chargerNomsSalleCsv();
         mScannerView = new ZXingScannerView(this);
         setContentView(mScannerView);
-
-        Intent i = new Intent(QRCodeScannerActivity.this,MapActivity.class);
-        startActivity(i);
     }
 
     @Override
@@ -54,9 +57,10 @@ public class QRCodeScannerActivity extends AppCompatActivity implements ZXingSca
     public void handleResult(Result result) {
         String QrScanned = result.getText();
         exist(QrScanned);
+        mScannerView.startCamera();
     }
 
-    private void GetListQRCode (){
+    private void getListQRCode(){
         RequestQueue requestQueue= Volley.newRequestQueue(getApplicationContext());
         String URL="http://192.168.1.44:8080/qrcode/qrcodeList";
 
@@ -80,12 +84,61 @@ public class QRCodeScannerActivity extends AppCompatActivity implements ZXingSca
         requestQueue.add(stringRequest);
     }
 
+    private void chargerNomsSalleCsv(){
+        nomsSalles = new ArrayList<>();
+        InputStream is = getResources().openRawResource(R.raw.rdc);
+        BufferedReader br = new BufferedReader(new InputStreamReader(is));
+        String readLine = null;
+        try {
+            br.readLine(); //la ligne 1 contient le nom des colonnes
+            while ((readLine = br.readLine()) != null) {
+                List<String> tokens = new ArrayList<>();
+                StringTokenizer tokenizer = new StringTokenizer(readLine, ",");
+                while (tokenizer.hasMoreElements()) {
+                    tokens.add(tokenizer.nextToken());
+                }
+                String nameSalle = tokens.get(3);
+                if(!nomsSalles.contains(nameSalle)){
+                    nomsSalles.add(nameSalle);
+                }
+            }
+            is.close();
+            br.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        is = getResources().openRawResource(R.raw.etage);
+        br = new BufferedReader(new InputStreamReader(is));
+        readLine = null;
+        try {
+            br.readLine(); //la ligne 1 contient le nom des colonnes
+            while ((readLine = br.readLine()) != null) {
+                List<String> tokens = new ArrayList<>();
+                StringTokenizer tokenizer = new StringTokenizer(readLine, ",");
+                while (tokenizer.hasMoreElements()) {
+                    tokens.add(tokenizer.nextToken());
+                }
+                String nameSalle = tokens.get(3);
+                if(!nomsSalles.contains(nameSalle)){
+                    nomsSalles.add(nameSalle);
+                }
+            }
+            is.close();
+            br.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void exist(String text){
-        boolean bool = list.contains(text);
-        if(bool){
-            makeText("il y est");
+        if(nomsSalles.contains(text)){
+            makeText(text);
+            Intent i = new Intent(QRCodeScannerActivity.this,MapActivity.class);
+            i.putExtra("position",text);
+            startActivity(i);
         }else{
-            makeText("il y est PAS");
+            makeText(text + " : Bad QRCode format !");
         }
     }
 

@@ -37,11 +37,9 @@ public class MainActivity extends AppCompatActivity {
                 int hasCameraPermission = checkSelfPermission(Manifest.permission.CAMERA);
                 int hasInternetPermission = checkSelfPermission(Manifest.permission.INTERNET);
 
-                if(hasCameraPermission == PackageManager.PERMISSION_GRANTED){
-                    if(hasInternetPermission == PackageManager.PERMISSION_GRANTED) {
-                        Intent i = new Intent(MainActivity.this, QRCodeScannerActivity.class);
-                        startActivity(i);
-                    }
+                if(hasCameraPermission == PackageManager.PERMISSION_GRANTED && hasInternetPermission == PackageManager.PERMISSION_GRANTED){
+                    Intent i = new Intent(MainActivity.this, QRCodeScannerActivity.class);
+                    startActivity(i);
                 }
                 else {
                     makeText("Please enable permissions.");
@@ -54,10 +52,9 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 int hasCameraPermission = checkSelfPermission(Manifest.permission.CAMERA);
                 int hasInternetPermission = checkSelfPermission(Manifest.permission.INTERNET);
-                if(hasCameraPermission == PackageManager.PERMISSION_GRANTED){
-                    if(hasInternetPermission == PackageManager.PERMISSION_GRANTED) {
-                        makeText("All required permissions are granted.");
-                    }
+                if(hasCameraPermission == PackageManager.PERMISSION_GRANTED && hasInternetPermission == PackageManager.PERMISSION_GRANTED){
+                    makeText("All required permissions are granted.");
+
                 } else {
                     askForPermission();
                 }
